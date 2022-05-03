@@ -1,0 +1,119 @@
+import React from 'react';
+import {
+    Datagrid,
+    DateField,
+    Edit,
+    EditButton,
+    FormTab,
+    NumberInput,
+    Pagination,
+    ReferenceInput,
+    ReferenceManyField,
+    SelectInput,
+    TabbedForm,
+    TextField,
+    TextInput,
+} from 'react-admin';
+import { InputAdornment } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import RichTextInput from 'ra-input-rich-text';
+
+import CustomerReferenceField from '../visitors/CustomerReferenceField';
+import StarRatingField from '../reviews/StarRatingField';
+import Poster from './Poster';
+import { styles as createStyles } from './ProductCreate';
+
+const ProductTitle = ({ record }) => <span>Credit: {record.reference}</span>;
+
+const styles = {
+    ...createStyles,
+    comment: {
+        maxWidth: '20em',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
+    },
+};
+
+const useStyles = makeStyles(styles);
+
+const ProductEdit = props => {
+    const classes = useStyles();
+    return (
+        <Edit {...props} title={<ProductTitle />}>
+            <TabbedForm>
+                <FormTab label="resources.products.tabs.details" path="details">
+                    <TextInput source="id" />
+                    <TextInput source="reference" />
+                    <NumberInput
+                        source="EIR"
+                        label="EIR Rate"
+                        className={classes.price}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                  %
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                    <NumberInput
+                        source="recommended_credit_score"
+                        label="Recommended Credit Rating"
+                    />
+                    <NumberInput
+                        source="annualfee"
+                        label="Annual fee"
+                        className={classes.width}
+                        formClassName={classes.widthFormGroup}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="start">
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                    <NumberInput
+                        source="variable_APR"
+                        label="APR rating"
+                        className={classes.height}
+                        formClassName={classes.heightFormGroup}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="start">
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                    <ReferenceInput source="category_id" reference="categories">
+                        <SelectInput source="name" />
+                    </ReferenceInput>
+                    <NumberInput label={"Global Rating"} source="stock" className={classes.stock} />
+                </FormTab>
+                <FormTab label="Customer feedback" path="reviews">
+                    <ReferenceManyField
+                        reference="reviews"
+                        target="product_id"
+                        addLabel={false}
+                        pagination={<Pagination />}
+                        fullWidth
+                    >
+                        <Datagrid>
+                            <DateField source="date" />
+                            <CustomerReferenceField />
+                            <StarRatingField />
+                            <TextField
+                                source="comment"
+                                cellClassName={classes.comment}
+                            />
+                            <TextField source="status" />
+                            <EditButton />
+                        </Datagrid>
+                    </ReferenceManyField>
+                </FormTab>
+            </TabbedForm>
+        </Edit>
+    );
+};
+
+export default ProductEdit;
